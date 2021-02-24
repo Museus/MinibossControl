@@ -1,3 +1,11 @@
+--[[
+    MinibossControl
+    Author:
+        Museus (Discord: Museus#7777)
+
+    Change the proportions of miniboss chambers, allowing minibosses
+    to be removed or replaced with others.
+]]
 ModUtil.RegisterMod("MinibossControl")
 --[[
 The default for each miniboss is 1.
