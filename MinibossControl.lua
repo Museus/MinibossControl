@@ -7,6 +7,7 @@
     to be removed or replaced with others.
 ]]
 ModUtil.RegisterMod("MinibossControl")
+
 --[[
 The default for each miniboss is 1.
 For most "vanilla" results, make each biome
@@ -15,70 +16,125 @@ For example if you remove Barge you should add a Witches
 or Power Couple.
 ]]--
 local config = {
-
-    Tartarus_Bombers = 1,
-    Tartarus_Doomstone = 1,
-    Tartarus_Sneak = 1,
-
-    Asphodel_Barge = 0,
-    Asphodel_PowerCouple = 1,
-    Asphodel_Witches = 2,
-
-    Elysium_ButterflyBall = 1,
-    Elysium_Asterius = 1,
-
-    -- If true, Tiny Vermin will not spawn
-    RemoveTinyVermin = true,
+    MinibossSetting = "Leaderboard"
 }
 MinibossControl.config = config
 
-ModUtil.LoadOnce( function()
+-- Preset setting profiles. "Vanilla" should always reflect the unedited game (each miniboss set to 1)
+MinibossControl.Presets = {
+    Vanilla = {
+      A_MiniBoss01 = 1, -- Tartarus Bombers
+      A_MiniBoss04 = 1, -- Tartarus Doomstone TODO: Handle middle management?
+      A_MiniBoss03 = 1, -- Tartarus Sneak
+
+      B_Wrapping01 = 1, -- Asphodel Barge
+      B_MiniBoss01 = 1, -- Asphodel Power Couple
+      B_MiniBoss02 = 1, -- Asphodel Witches
+
+      C_MiniBoss02 = 1, -- Elysium Butterfly Ball
+      C_MiniBoss01 = 1, -- Elysium Asterius
+
+      RemoveTinyVermin = false, -- If true, Tiny Vermin will not spawn
+    },
+    HyperDelivery1 = {
+      A_MiniBoss01 = 1,
+      A_MiniBoss04 = 1,
+      A_MiniBoss03 = 1,
+
+      B_Wrapping01 = 0,
+      B_MiniBoss01 = 1,
+      B_MiniBoss02 = 2,
+
+      C_MiniBoss02 = 1,
+      C_MiniBoss01 = 1,
+
+      RemoveTinyVermin = true,
+    },
+    HyperDelivery = {
+      A_MiniBoss01 = 1,
+      A_MiniBoss04 = 1,
+      A_MiniBoss03 = 1,
+
+      B_Wrapping01 = 0,
+      B_MiniBoss01 = 1,
+      B_MiniBoss02 = 2,
+
+      C_MiniBoss02 = 0,
+      C_MiniBoss01 = 2,
+
+      RemoveTinyVermin = true,
+    },
+    Leaderboard = {
+      A_MiniBoss01 = 1,
+      A_MiniBoss04 = 1,
+      A_MiniBoss03 = 1,
+
+      B_Wrapping01 = 0,
+      B_MiniBoss01 = 1,
+      B_MiniBoss02 = 2,
+
+      C_MiniBoss02 = 2,
+      C_MiniBoss01 = 0,
+
+      RemoveTinyVermin = true,
+    }
+  }
+
+-- Register a new miniboss control preset
+function MinibossControl.RegisterPreset(name, preset)
+    MinibossControl.Presets[name] = preset
+end
+
+-- Apply the configured miniboss settings to the game data
+function MinibossControl.UpdateMaxCreations()
     ModUtil.MapSetTable(RoomSetData, {
         -- [[ Tartarus Miniboss Counts ]]
         Tartarus = {
             A_MiniBoss01 = {
-                MaxCreationsThisRun = config.Tartarus_Bombers,
+                MaxCreationsThisRun = MinibossControl.Presets[config.MinibossSetting].A_MiniBoss01,
             },
             A_MiniBoss02 = {
-                -- Middle Management Doomstone
-                MaxCreationsThisRun = config.Tartarus_Doomstone,
+                MaxCreationsThisRun = MinibossControl.Presets[config.MinibossSetting].A_MiniBoss04,
             },
             A_MiniBoss03 = {
-                MaxCreationsThisRun = config.Tartarus_Sneak,
+                MaxCreationsThisRun = MinibossControl.Presets[config.MinibossSetting].A_MiniBoss03,
             },
             A_MiniBoss04 = {
-                -- Vanilla Doomstone
-                MaxCreationsThisRun = config.Tartarus_Doomstone,
+                MaxCreationsThisRun = MinibossControl.Presets[config.MinibossSetting].A_MiniBoss04,
             },
         },
         -- [[ Asphodel Miniboss Counts ]]
         Asphodel = {
             B_MiniBoss01 = {
-                MaxCreationsThisRun = config.Asphodel_PowerCouple,
+                MaxCreationsThisRun = MinibossControl.Presets[config.MinibossSetting].B_MiniBoss01,
             },
             B_MiniBoss02 = {
-                MaxCreationsThisRun = config.Asphodel_Witches,
+                MaxCreationsThisRun = MinibossControl.Presets[config.MinibossSetting].B_MiniBoss02,
             },
             B_Wrapping01 = {
-                MaxCreationsThisRun = config.Asphodel_Barge,
+                MaxCreationsThisRun = MinibossControl.Presets[config.MinibossSetting].B_Wrapping01,
             },
         },
         -- [[ Elysium Miniboss Counts ]]
         Elysium = {
             C_MiniBoss01 = {
-                MaxCreationsThisRun = config.Elysium_Asterius,
+                MaxCreationsThisRun = MinibossControl.Presets[config.MinibossSetting].C_MiniBoss01,
             },
             C_MiniBoss02 = {
-                MaxCreationsThisRun = config.Elysium_ButterflyBall,
+                MaxCreationsThisRun = MinibossControl.Presets[config.MinibossSetting].C_MiniBoss02,
             },
         },
     })
 
     -- Remove Tiny Vermin
-    if config.RemoveTinyVermin then
+    if MinibossControl.Presets[config.MinibossSetting].RemoveTinyVermin then
         ModUtil.MapSetTable(RoomSetData.Styx.D_MiniBoss03, {
             LegalEncounters = { "MiniBossHeavyRangedForked" },
         })
+    else
+      ModUtil.MapSetTable(RoomSetData.Styx.D_MiniBoss03, {
+          LegalEncounters = { "MiniBossCrawler", "MiniBossHeavyRangedForked" },
+      })
     end
 end)
 
@@ -99,6 +155,12 @@ ModUtil.WrapBaseFunction("ChooseNextRoomData", function( baseFunc, currentRun, a
     })
 
     return baseFunc(currentRun, args)
+end, MinibossControl)
+
+-- When a new run is started, make sure to apply the miniboss modifications
+ModUtil.WrapBaseFunction("StartNewRun", function ( baseFunc, currentRun )
+    MinibossControl.UpdateMaxCreations()
+    return baseFunc(currentRun)
 end, MinibossControl)
 
 -- Scripts/RoomManager.lua : 1874
