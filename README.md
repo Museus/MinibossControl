@@ -26,4 +26,8 @@ Run the `modimporter.py` script to install the mods, then load into your game. W
 
 # Configuration
 
-You can set the Creation count for each miniboss in Tartarus, Asphodel, and Elysium, and remove Tiny Vermin. To change these options, open the `Mods` folder,  open the `MinibossControl` folder, then open `MinibossControl.lua` in Notepad. There will be a block at the top with `local config = {` followed by options that can be changed.
+You can set the Creation count for each miniboss in Tartarus, Asphodel, and Elysium, and remove Tiny Vermin. To change these options, you must update two files.
+
+1. Open the `Mods` folder,  open the `MinibossControl` folder, then open `presets.lua` in Notepad. This file contains all the registered presets. Either change one of the existing ones to your desired counts, or create a new registered preset.
+
+2. Open the `Mods` folder,  open the `MinibossControl` folder, then open `config.lua` in Notepad. This file tells MinibossControl which preset to load. Change the MinibossSetting value to the name of the preset you want to use.

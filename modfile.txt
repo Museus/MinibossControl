@@ -1,2 +1,7 @@
 :: Miniboss Control
+Load Priority 90
 Import "MinibossControl.lua"
+
+Load Priority 95
+Import "presets.lua"
+Import "config.lua"
